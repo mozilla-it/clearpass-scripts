@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ -n "$DEBUG" ]; then
+    PS4=':${LINENO}+'
+    set -x
+fi
+
+if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
+    echo "CLIENT_ID and CLIENT_SECRET env vars must be specified"
+    exit -1
+fi
+
+aruba/clearpass-api-python/cpapi.py \
+    --client-id $CLIENT_ID \
+    --client-secret $CLIENT_SECRET \
+    --host clearpass.mozilla.net \
+    "$@"

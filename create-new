@@ -1,0 +1,58 @@
+#!/bin/bash
+
+if [ -n "$DEBUG" ]; then
+    PS4=':${LINENO}+'
+    set -x
+fi
+
+if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
+    echo "CLIENT_ID and CLIENT_SECRET env vars must be specified"
+    exit -1
+fi
+
+# clone repo
+git clone https://aruba/clearpass-python-api aruba/clearpass-python-api
+
+# create a new
+aruba/clearpass-api-python/cpapi.py \
+    --client-id $CLIENT_ID \
+    --client-secret $CLIENT_SECRET \
+    --host clearpass.mozilla.net \
+    POST \
+    certificate/new \
+    ca_id=7 \
+    cert_type=tls-client \
+    country=US \
+    state=Oregon \
+    locality=Portland \
+    organization=Mozilla \
+    key_type=rsa_4096 \
+    common_name=name@mozilla.com
+    email_address=name@mozilla.com
+
+# assign the cert id value from the output of the previous create command
+CERT_ID=<cert-id>
+
+# sign the cert
+aruba/clearpass-api-python/cpapi.py \
+    --client-id $CLIENT_ID \
+    --client-secret $CLIENT_SECRET \
+    --host clearpass.mozilla.net \
+    POST \
+    certificate/$CERT_ID/sign \
+    ca_id=7 \
+    days=365 \
+    confirm_sign=true
+
+# export cert
+aruba/clearpass-api-python/cpapi.py \
+    --client-id $CLIENT_ID \
+    --client-secret $CLIENT_SECRET \
+    --host clearpass.mozilla.net \
+    POST \
+    certificate/$CERT_ID/export \
+    export_format=p12 \
+    include_chain=false \
+    export_password=test123 \
+    export_password2=test123
+

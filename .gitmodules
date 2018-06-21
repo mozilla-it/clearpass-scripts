@@ -1,0 +1,8 @@
+[submodule "aruba/clearpass-api-python"]
+	path = aruba/clearpass-api-python
+	url = https://github.com/aruba/clearpass-api-python
+	branch = master
+[submodule "aruba/clearpass-api-python-snippets"]
+	path = aruba/clearpass-api-python-snippets
+	url = https://github.com/aruba/clearpass-api-python-snippets
+	branch = master
